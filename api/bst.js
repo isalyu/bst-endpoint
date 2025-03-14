@@ -11,9 +11,12 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   
   try {
-    const parsedBody = JSON.parse(req.body);
-    console.log('Parsed request body:', parsedBody);
+    let rawData = '';
+    for await (const chunk of req) {
+      rawData += chunk;
+    }
 
+    const parsedBody = JSON.parse(rawData);
     const { base64Image } = parsedBody;
     console.log('Received base64Image length:', base64Image?.length);
 
