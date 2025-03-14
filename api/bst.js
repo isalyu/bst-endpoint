@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } = require('openai');
+const { Configuration, OpenAIApi } = require('openai');
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
