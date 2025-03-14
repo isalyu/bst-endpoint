@@ -11,10 +11,15 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   
   try {
-    const { base64Image } = JSON.parse(req.body);
+    const parsedBody = JSON.parse(req.body);
+    console.log('Parsed request body:', parsedBody);
+
+    const { base64Image } = parsedBody;
+    console.log('Received base64Image length:', base64Image?.length);
 
     const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
     const openai = new OpenAIApi(configuration);
+    console.log('OpenAI client configured.');
 
     const response = await openai.createChatCompletion({
       model: "gpt-4o",
@@ -43,9 +48,18 @@ export default async function handler(req, res) {
       temperature: 0
     });
 
+    console.log('OpenAI response received:', response.data);
+
     res.status(200).json({ result: response.data.choices[0].message.content });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Something went wrong' });
+      console.error('Error in the /api/bst handler:', error);
+
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      if (error.response) {
+        console.error('Error response status:', error.response.status);
+        console.error('Error response data:', error.response.data);
+      }
+      res.status(500).json({ error: 'Something went wrong' });
   }
 }
